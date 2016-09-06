@@ -12,6 +12,7 @@ var reader = require('readline').createInterface({
     input: process.stdin,
     output: process.stdout,
 });
+var lastError = '';
 reader.on('line', function (line) {
     debug(line);
     var args = line.split(' ');
@@ -31,10 +32,20 @@ reader.on('line', function (line) {
             : 'NONE');
         break;
     case 'GETTEXT':
-        console.log('TEXT ' + commands[parseInt(arg)][1]);
+        try {
+            var token = parseInt(arg);
+            console.log('TEXT ' + commands[token][1]);
+        } catch (e) {
+            lastError = e.toString();
+            console.log('ERROR');
+        }
+        break;
+    case 'GETERROR':
+        console.log(lastError);
         break;
     case 'QUIT':
         reader.close();
+        process.exit(0);
         break;
     default:
         console.log('UNKNOWN');
