@@ -43,24 +43,34 @@ var reader = require('readline').createInterface({
     input: child.stdout,
     output: child.stdin,
 });
-function childPrint(child, line) {
+function childPrint(line) {
     console.log('\tINPUT : ' + line);
     child.stdin.write(line + '\n');
 }
 var currentTest = testSuite.shift();
+var delayedError = null;
 console.log('TEST: ' + currentTest[0]);
 reader.on('line', function (line) {
     if (testSuite.length) {
         console.log('\tOUTPUT: ' + line);
+        if (delayedError) {
+            throw delayedError;
+        }
         var re = new RegExp(currentTest[2]);
         var found = re.exec(line);
-        assert(found && found[0] === line, currentTest[3]);
+        try {
+            assert(found && found[0] === line, currentTest[3]);
+        } catch (e) {
+            delayedError = e;
+            childPrint('GETERROR');
+            return;
+        }
         console.log('=>OK');
 
         currentTest = testSuite.shift();
         // console.log(currentTest);
         console.log('TEST: ' + currentTest[0]);
-        childPrint(child, currentTest[1]);
+        childPrint(currentTest[1]);
     } else {
         console.log('=>NG');
     }
