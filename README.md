@@ -19,7 +19,7 @@ $ npm init
 
 `npm` でこのリポジトリをインストールします。(npm repository には未登録です。)
 ```
-$ npm install --save git+https://github.com/sudachichan/atok-spark-plugin.js
+$ npm install --save git+https://github.com/sudachichan/atok-spark-plugin.js.git
 ```
 
 以下のように `check` イベントと `gettext` に応答するスクリプトを記述するだけで、ATOK Sparkプラグインとして動作するようになります。
