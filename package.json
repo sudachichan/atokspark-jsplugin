@@ -1,0 +1,19 @@
+{
+  "name": "atok-spark-plugin.js",
+  "version": "0.0.1",
+  "description": "",
+  "main": "plugin.js",
+  "scripts": {
+    "test": "node test_plugin.js test_sample.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sudachichan/atok-spark-plugin.js.git"
+  },
+  "author": "sudachichan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sudachichan/atok-spark-plugin.js/issues"
+  },
+  "homepage": "https://github.com/sudachichan/atok-spark-plugin.js#readme"
+}
