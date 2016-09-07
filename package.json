@@ -2,9 +2,10 @@
   "name": "atok-spark-plugin.js",
   "version": "0.0.1",
   "description": "",
+  "bin": "bin/test_plugin",
   "main": "plugin.js",
   "scripts": {
-    "test": "node test_plugin.js test_sample.json"
+    "test": "node bin/test_plugin test_sample.json"
   },
   "repository": {
     "type": "git",
