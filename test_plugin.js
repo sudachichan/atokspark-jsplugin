@@ -1,42 +1,24 @@
+var fs = require('fs')
 var assert = require('assert');
 var child_process = require('child_process');
 
-var testSuite = [
-    ['HELLO',
-        null,
-        'HELLO ATOK Spark/0.0',
-        '正しいHELLOコマンドが送られてきませんでした。'],
-    ['GETERROR(noerror)',
-        'GETERROR',
-        '',
-        'エラーなし状態で、空行を返していません。GETERRORが未実装では？'],
-    ['CHECK(not found)',
-        'CHECK hoge',
-        'NONE',
-        '未知のトリガーに対して、NONEを返していません。'],
-    ['CHECK(found)',
-        'CHECK pluginjs:',
-        /REPLACE \d+/,
-        '既知のトリガーに対して、"REPLACE 整数"を返していません。'],
-    ['GETTEXT(succeeds)',
-        'GETTEXT 0',
-        'TEXT node.jsサンプルです',
-        '既知のトリガーに対して、期待する結果を返していません。'],
-    ['GETTEXT(fails)',
-        'GETTEXT 1234567890',
-        'ERROR',
-        '既知のトリガーに対して、ERRORを返していません。'],
-    ['UNKNOWN',
-        'hoge',
-        'UNKNOWN',
-        '未知のコマンドに対して、UNKNOWNを返していません。'],
-    ['QUIT',
-        'QUIT',
-        null,
-        null],
-];
+if (process.argv.length < 3) {
+    error('引数にテスト定義JSONファイルを指定してください。');
+}
+function error(errorMessage) {
+    console.log(errorMessage);
+    printUsage();
+    process.exit(1);
+}
+function printUsage() {
+    var scriptName = process.argv[1]
+    scriptName = '.' + scriptName.split(__dirname)[1];
+    console.log('Usage: node ' + scriptName + ' TestDefinition.json\n');
+}
+var testSuite = JSON.parse(fs.readFileSync(process.argv[2]));
 
-var child = child_process.fork('sample.js', [], {
+var commandLine = testSuite.plugin.split(' ');
+var child = child_process.spawn(commandLine.shift(), commandLine, {
     silent: true
 });
 var reader = require('readline').createInterface({
@@ -47,19 +29,20 @@ function childPrint(line) {
     console.log('\tINPUT : ' + line);
     child.stdin.write(line + '\n');
 }
-var currentTest = testSuite.shift();
+var tests = testSuite.tests;
+var currentTest = tests.shift();
 var delayedError = null;
-console.log('TEST: ' + currentTest[0]);
+console.log('TEST: ' + currentTest.test);
 reader.on('line', function (line) {
-    if (testSuite.length) {
+    if (tests.length) {
         console.log('\tOUTPUT: ' + line);
         if (delayedError) {
             throw delayedError;
         }
-        var re = new RegExp(currentTest[2]);
+        var re = new RegExp(currentTest.shouldOutput);
         var found = re.exec(line);
         try {
-            assert(found && found[0] === line, currentTest[3]);
+            assert(found && found[0] === line, currentTest.ifFailed);
         } catch (e) {
             delayedError = e;
             childPrint('GETERROR');
@@ -67,16 +50,17 @@ reader.on('line', function (line) {
         }
         console.log('=>OK');
 
-        currentTest = testSuite.shift();
+        currentTest = tests.shift();
         // console.log(currentTest);
-        console.log('TEST: ' + currentTest[0]);
-        childPrint(currentTest[1]);
+        console.log('TEST: ' + currentTest.test);
+        childPrint(currentTest.input);
     } else {
+        assert(false, currentTest.ifFailed);
         console.log('=>NG');
     }
 });
 reader.on('close', function () {
-    if (!testSuite.length) {
+    if (!tests.length) {
         console.log('=>OK');
     } else {
         console.log('=>CRASHED!!!')

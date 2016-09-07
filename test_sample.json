@@ -1,0 +1,51 @@
+{
+    "plugin": "node sample.js",
+    "tests": [
+        {
+            "test":         "HELLO",
+            "shouldOutput": "HELLO ATOK Spark/0.0",
+            "ifFailed":     "正しいHELLOコマンドが送られてきませんでした。"
+        },
+        {
+            "test":         "GETERROR(noerror)",
+            "input":        "GETERROR",
+            "shouldOutput": "",
+            "ifFailed":     "エラーなし状態で、空行を返していません。GETERRORが未実装では？"
+        },
+        {
+            "test":         "CHECK(not found)",
+            "input":        "CHECK hoge",
+            "shouldOutput": "NONE",
+            "ifFailed":     "未知のトリガーに対して、NONEを返していません。"
+        },
+        {
+            "test":         "CHECK(found)",
+            "input":        "CHECK pluginjs:",
+            "shouldOutput": "REPLACE \\d+",
+            "ifFailed":     "既知のトリガーに対して、\"REPLACE 整数\"を返していません。"
+        },
+        {
+            "test":         "GETTEXT(succeeds)",
+            "input":        "GETTEXT 0",
+            "shouldOutput": "TEXT node.jsサンプルです",
+            "ifFailed":     "既知のトリガーに対して、期待する結果を返していません。"
+        },
+        {
+            "test":         "GETTEXT(fails)",
+            "input":        "GETTEXT 1234567890",
+            "shouldOutput": "ERROR",
+            "ifFailed":     "既知のトリガーに対して、ERRORを返していません。"
+        },
+        {
+            "test":         "UNKNOWN",
+            "input":        "hoge",
+            "shouldOutput": "UNKNOWN",
+            "ifFailed":     "未知のコマンドに対して、UNKNOWNを返していません。"
+        },
+        {
+            "test":         "QUIT",
+            "input":        "QUIT",
+            "ifFailed":     "QUIT を呼んでもまだ動作しています。"
+        }
+    ]
+}
