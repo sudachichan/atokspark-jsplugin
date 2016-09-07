@@ -5,7 +5,7 @@
   "bin": { "test_plugin": "bin/test_plugin.js" },
   "main": "plugin.js",
   "scripts": {
-    "test": "node bin/test_plugin.js test_sample.json"
+    "test": "echo No individual test now.; echo Try sample: https://github.com/sudachichan/atok-spark-plugin.js-sample ."
   },
   "repository": {
     "type": "git",
