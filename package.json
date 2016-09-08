@@ -1,20 +1,20 @@
 {
-  "name": "atok-spark-plugin.js",
+  "name": "atokspark-jsplugin",
   "version": "0.0.1",
   "description": "",
   "bin": { "test_plugin": "bin/test_plugin.js" },
   "main": "plugin.js",
   "scripts": {
-    "test": "echo No individual test now.; echo Try sample: https://github.com/sudachichan/atok-spark-plugin.js-sample ."
+    "test": "echo No individual test now.; echo Try sample: https://github.com/sudachichan/atokspark-jsplugin-sample ."
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sudachichan/atok-spark-plugin.js.git"
+    "url": "git+https://github.com/sudachichan/atokspark-jsplugin.git"
   },
   "author": "sudachichan",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sudachichan/atok-spark-plugin.js/issues"
+    "url": "https://github.com/sudachichan/atokspark-jsplugin/issues"
   },
-  "homepage": "https://github.com/sudachichan/atok-spark-plugin.js#readme"
+  "homepage": "https://github.com/sudachichan/atokspark-jsplugin#readme"
 }
