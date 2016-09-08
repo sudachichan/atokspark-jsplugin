@@ -1,12 +1,10 @@
-# atok-spark-plugin.js
+# atokspark-jsplugin
 node.js で [ATOK Spark](https://github.com/JustSystems/ATOK_Spark) のプラグインを簡単に記述できるフレームワークです。
-
-(※現状の名前は npm モジュール名として扱いにくいため、近い将来 repo 名は変更するかもしれません。)
 
 ## サンプル
 このフレームワークを使っているサンプルコードは以下です。
 
-https://github.com/sudachichan/atok-spark-plugin.js-sample
+https://github.com/sudachichan/atokspark-jsplugin-sample
 
 ## 使い方
 
@@ -19,12 +17,12 @@ $ npm init
 
 `npm` でこのリポジトリをインストールします。(npm repository には未登録です。)
 ```
-$ npm install --save git+https://github.com/sudachichan/atok-spark-plugin.js.git
+$ npm install --save git+https://github.com/sudachichan/atokspark-jsplugin.git
 ```
 
 以下のように `check` イベントと `gettext` に応答するスクリプトを記述するだけで、ATOK Sparkプラグインとして動作するようになります。
 ```javascript
-var Plugin = require('atok-spark-plugin.js');
+var Plugin = require('atokspark-jsplugin');
 
 var yourPlugin = new Plugin().run();
 yourPlugin.on('check', function (text, callback) {
