@@ -68,5 +68,37 @@ Plugin.prototype = {
         }
     },
 }
+// 正規表現にマッチして結果を返すプラグインを定義します。
+Plugin.byRules = function (rules) {
+    var MAX_AWAITINGS = 5;
+    var awaitings = [];
+    var index = 0;
+
+    var simple = new Plugin().run();
+    simple.on('check', function (text, callback) {
+        var matches = null;
+        var matchedRule = null;
+        for (regex of Object.keys(rules)) {
+            var matches = new RegExp(regex).exec(text);
+            if (matches) {
+                var func = rules[regex];
+                awaitings[index] = [func, matches];
+                callback(index);
+                index = index + 1 % MAX_AWAITINGS;
+                return;
+            }
+        }
+        callback(null);
+    });
+    simple.on('gettext', function (token, callback) {
+        if (token < 0 || MAX_AWAITINGS < token) {
+            throw "無効な token です";
+        }
+        var pair = awaitings[token];
+        var func = pair[0];
+        var matches = pair[1];
+        callback(func(matches));
+    });
+};
 
 module.exports = Plugin;
