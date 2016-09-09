@@ -20,7 +20,29 @@ $ npm init
 $ npm install --save git+https://github.com/sudachichan/atokspark-jsplugin.git
 ```
 
+### 簡易記法
+
+以下のように `Plugin.byRules()` に、`{正規表現: 関数}` の連想配列を指定することでプラグインを定義できます。
+
+```javascript
+var Plugin = require('atokspark-jsplugin');
+
+Plugin.byRules({
+    'foo:': function () {
+        return 'foo: がこの文字列に置換されます。';
+    },
+    'bar:(.*):': function (matches) {
+        return 'bar:ほにゃらら: にマッチして「' + matches[1] + '」を使った文字列に置換されます。';
+    },
+});
+```
+
+### イベント処理記法
+
 以下のように `check` イベントと `gettext` に応答するスクリプトを記述するだけで、ATOK Sparkプラグインとして動作するようになります。
+
+簡易記法では行えないような特殊なマッチ処理に使ってください。
+
 ```javascript
 var Plugin = require('atokspark-jsplugin');
 
@@ -33,10 +55,12 @@ yourPlugin.on('check', function (text, callback) {
 });
 yourPlugin.on('gettext', function (token, callback) {
   // 'check' の問い合わせ時に返した整数値(トークン)に対する文字列を返します。
-  return "text";
+  callback("text");
   // エラー時は例外を throw してください。
 });
 ```
+
+## ATOK Spark にプラグインを登録する
 
 なお、 ATOK Spark の plugin.lst には以下のように指定してください。(Mac, nodebrew で node.js をインストールしている場合の例)
 ```
