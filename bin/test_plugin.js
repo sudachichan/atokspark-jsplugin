@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-var fs = require('fs')
-var assert = require('assert');
-var child_process = require('child_process');
+const fs = require('fs')
+const assert = require('assert');
+const child_process = require('child_process');
 
 function PluginTester(testSuite) {
     this.testSuite = testSuite;
@@ -18,28 +18,27 @@ PluginTester.prototype = {
         this.connect();
     },
     startPlugin: function () {
-        var commandLine = this.testSuite.plugin.split(' ');
+        const commandLine = this.testSuite.plugin.split(' ');
         this.child = child_process.spawn(commandLine.shift(), commandLine, {
             silent: true
         });
     },
     connect: function () {
         this.stdout = '';
-        var that = this;
-        this.child.stdout.on('data', function (data) {
-            that.stdout += data;
-            var newLines = that.stdout.split('\n');
+        this.child.stdout.on('data', (data) => {
+            this.stdout += data;
+            const newLines = this.stdout.split('\n');
             if (newLines.length > 1) {
-                that.stdout = newLines.pop();
-                that.onLine(newLines.join('\n'));
+                this.stdout = newLines.pop();
+                this.onLine(newLines.join('\n'));
             }
         });
-        this.child.stdout.on('close', function () {
-            if (that.stdout.length) {
-                that.onLine(that.stdout);
-                that.stdout = '';
+        this.child.stdout.on('close', () => {
+            if (this.stdout.length) {
+                this.onLine(this.stdout);
+                this.stdout = '';
             }
-            that.onClose();
+            this.onClose();
         });
     },
     onLine: function (line) {
@@ -48,8 +47,8 @@ PluginTester.prototype = {
             if (this.delayedError) {
                 throw this.delayedError;
             }
-            var re = new RegExp(this.currentTest.shouldOutput);
-            var found = re.exec(line);
+            const re = new RegExp(this.currentTest.shouldOutput);
+            const found = re.exec(line);
             try {
                 assert(found && found[0] === line, this.currentTest.ifFailed);
             } catch (e) {
@@ -85,8 +84,8 @@ function main(args) {
     if (process.argv.length < 3) {
         error('引数にテスト定義JSONファイルを指定してください。');
     }
-    var testSuite = JSON.parse(fs.readFileSync(process.argv[2]));
-    var tester = new PluginTester(testSuite);
+    const testSuite = JSON.parse(fs.readFileSync(process.argv[2]));
+    const tester = new PluginTester(testSuite);
     tester.run();
 }
 function error(errorMessage) {
@@ -95,7 +94,7 @@ function error(errorMessage) {
     process.exit(1);
 }
 function printUsage() {
-    var scriptName = process.argv[1]
+    const scriptName = process.argv[1]
     scriptName = '.' + scriptName.split(__dirname)[1];
     console.log('Usage: node ' + scriptName + ' TestDefinition.json\n');
 }
