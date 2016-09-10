@@ -69,7 +69,7 @@ Plugin.prototype = {
     },
 }
 // 正規表現にマッチして結果を返すプラグインを定義します。
-Plugin.byRules = function (rules) {
+Plugin.byRules = function (rules, async) {
     var MAX_AWAITINGS = 5;
     var awaitings = [];
     var index = 0;
@@ -97,8 +97,16 @@ Plugin.byRules = function (rules) {
         var pair = awaitings[token];
         var func = pair[0];
         var matches = pair[1];
-        callback(func(matches));
+        if (async) {
+            func(callback, matches);
+        } else {
+            callback(func(matches));
+        }
     });
+};
+// 正規表現にマッチして結果を返すプラグインを定義します。(非同期実行版)
+Plugin.byRulesAsync = function (rules) {
+    Plugin.byRules(rules, true);
 };
 
 module.exports = Plugin;

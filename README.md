@@ -37,6 +37,23 @@ Plugin.byRules({
 });
 ```
 
+### 簡易記法(非同期版)
+
+以下のように `Plugin.byRulesAsync()` に、`{正規表現: 関数}` の連想配列を指定することでプラグインを定義できます。
+
+```javascript
+var Plugin = require('atokspark-jsplugin');
+
+Plugin.byRulesAsync({
+    'foo:': function (callback) {
+        callback('foo: がこの文字列に置換されます。');
+    },
+    'bar:(.*):': function (callback, matches) {
+        callback('bar:ほにゃらら: にマッチして「' + matches[1] + '」を使った文字列に置換されます。');
+    },
+});
+```
+
 ### イベント処理記法
 
 以下のように `check` イベントと `gettext` に応答するスクリプトを記述するだけで、ATOK Sparkプラグインとして動作するようになります。
