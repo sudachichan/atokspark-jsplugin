@@ -11,7 +11,7 @@ PluginTester.prototype = {
     run: function () {
         this.tests = this.testSuite.tests;
         this.currentTest = this.tests.shift();
-        console.log('TEST: ' + this.currentTest.test);
+        console.log(`TEST: ${this.currentTest.test}`);
         this.delayedError = null;
 
         this.startPlugin();
@@ -43,7 +43,7 @@ PluginTester.prototype = {
     },
     onLine: function (line) {
         if (this.tests.length) {
-            console.log('\tOUTPUT: ' + line);
+            console.log(`\tOUTPUT: ${line}`);
             if (this.delayedError) {
                 throw this.delayedError;
             }
@@ -60,7 +60,7 @@ PluginTester.prototype = {
 
             this.currentTest = this.tests.shift();
             // console.log(currentTest);
-            console.log('TEST: ' + this.currentTest.test);
+            console.log(`TEST: ${this.currentTest.test}`);
             this.childPrint(this.currentTest.input);
         } else {
             assert(false, this.currentTest.ifFailed);
@@ -75,7 +75,7 @@ PluginTester.prototype = {
         }
     },
     childPrint: function (line) {
-        console.log('\tINPUT : ' + line);
+        console.log(`\tINPUT : ${line}`);
         this.child.stdin.write(line + '\n');
     },
 };
@@ -96,6 +96,6 @@ function error(errorMessage) {
 function printUsage() {
     const scriptName = process.argv[1]
     scriptName = '.' + scriptName.split(__dirname)[1];
-    console.log('Usage: node ' + scriptName + ' TestDefinition.json\n');
+    console.log(`Usage: node ${scriptName} TestDefinition.json\n`);
 }
 main(process.argv);
