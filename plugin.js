@@ -1,4 +1,4 @@
-var EventEmitter = require('events').EventEmitter;
+const EventEmitter = require('events').EventEmitter;
 
 function isInteger(s) {
     return parseInt(s) === s;
@@ -15,13 +15,12 @@ function Plugin() {
 Plugin.prototype = {
     run: function () {
         console.log('HELLO ATOK Spark/0.0');
-        var that = this;
-        this.reader.on('line', function (line) {
-            var args = line.split(' ');
-            var command = args.shift();
-            var arg = args.join(' ');
-            if (command in that) {
-                that[command].apply(that, [arg]);
+        this.reader.on('line', (line) => {
+            const args = line.split(' ');
+            const command = args.shift();
+            const arg = args.join(' ');
+            if (command in this) {
+                this[command].apply(this, [arg]);
             } else {
                 console.log('UNKNOWN');
             }
@@ -31,18 +30,18 @@ Plugin.prototype = {
 
     // Commands
     CHECK: function (text) {
-        this.emit('check', text, function (pair) {
+        this.emit('check', text, (pair) => {
             return pair instanceof Array
                 ? pair.join(' ')
                 : 'NONE';
-        }, function (e) {
+        }, (e) => {
             return 'NONE';
         });
     },
     GETTEXT: function (token) {
-        this.emit('gettext', token, function (text) {
+        this.emit('gettext', token, (text) => {
             return ['TEXT', text].join(' ');
-        }, function (e) {
+        }, (e) => {
             return 'ERROR';
         })
     },
@@ -57,7 +56,7 @@ Plugin.prototype = {
     // Utilites
     emit: function (event, arg, onResult, onError) {
         try {
-            this.emitter.emit(event, arg, function (result) {
+            this.emitter.emit(event, arg, (result) => {
                 console.log(onResult(result));
             })
         } catch (e) {
@@ -70,21 +69,19 @@ Plugin.prototype = {
 }
 // 正規表現にマッチして結果を返すプラグインを定義します。
 Plugin.byRules = function (rules, async) {
-    var MAX_AWAITINGS = 5;
-    var awaitings = [];
+    const MAX_AWAITINGS = 5;
+    const awaitings = [];
     var index = 0;
 
-    var simple = new Plugin().run();
-    simple.on('check', function (text, callback) {
-        var matches = null;
-        var matchedRule = null;
+    const simple = new Plugin().run();
+    simple.on('check', (text, callback) => {
         for (theRules of [rules.replaces, rules.views]) {
             for (regex of Object.keys(theRules)) {
                 var matches = new RegExp(regex).exec(text);
                 if (matches && matches[0] === text) {
-                    var func = theRules[regex];
+                    const func = theRules[regex];
                     awaitings[index] = [func, matches];
-                    var theType = theRules == rules.replaces
+                    const theType = theRules == rules.replaces
                         ? 'REPLACE'
                         : 'VIEW';
                     callback([theType, index]);
@@ -95,13 +92,13 @@ Plugin.byRules = function (rules, async) {
         }
         callback(null);
     });
-    simple.on('gettext', function (token, callback) {
+    simple.on('gettext', (token, callback) => {
         if (token < 0 || MAX_AWAITINGS < token) {
             throw "無効な token です";
         }
-        var pair = awaitings[token];
-        var func = pair[0];
-        var matches = pair[1];
+        const pair = awaitings[token];
+        const func = pair[0];
+        const matches = pair[1];
         if (rules.async) {
             func(callback, matches);
         } else {
