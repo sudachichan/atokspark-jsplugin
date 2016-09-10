@@ -5,9 +5,9 @@ function isInteger(s) {
     return parseInt(s) === s;
 }
 
-class Plugin {
+class Plugin extends EventEmitter {
     constructor() {
-        this.emitter = new EventEmitter();
+        super();
         this.lastError = '';
         this.reader = require('readline').createInterface({
             input: process.stdin,
@@ -26,7 +26,7 @@ class Plugin {
                 console.log('UNKNOWN');
             }
         });
-        return this.emitter;
+        return this;
     }
 
     // Commands
@@ -57,7 +57,7 @@ class Plugin {
     // Utilites
     emit(event, arg, onResult, onError) {
         try {
-            this.emitter.emit(event, arg, (result) => {
+            super.emit(event, arg, (result) => {
                 console.log(onResult(result));
             })
         } catch (e) {
