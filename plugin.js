@@ -5,16 +5,16 @@ function isInteger(s) {
     return parseInt(s) === s;
 }
 
-function Plugin() {
-    this.emitter = new EventEmitter();
-    this.lastError = '';
-    this.reader = require('readline').createInterface({
-        input: process.stdin,
-        output: process.stdout,
-    });
-}
-Plugin.prototype = {
-    run: function () {
+class Plugin {
+    constructor() {
+        this.emitter = new EventEmitter();
+        this.lastError = '';
+        this.reader = require('readline').createInterface({
+            input: process.stdin,
+            output: process.stdout,
+        });
+    }
+    run() {
         console.log('HELLO ATOK Spark/0.0');
         this.reader.on('line', (line) => {
             const args = line.split(' ');
@@ -27,10 +27,10 @@ Plugin.prototype = {
             }
         });
         return this.emitter;
-    },
+    }
 
     // Commands
-    CHECK: function (text) {
+    CHECK(text) {
         this.emit('check', text, (pair) => {
             return pair instanceof Array
                 ? pair.join(' ')
@@ -38,24 +38,24 @@ Plugin.prototype = {
         }, (e) => {
             return 'NONE';
         });
-    },
-    GETTEXT: function (token) {
+    }
+    GETTEXT(token) {
         this.emit('gettext', token, (text) => {
             return ['TEXT', text].join(' ');
         }, (e) => {
             return 'ERROR';
         })
-    },
-    GETERROR: function () {
+    }
+    GETERROR() {
         console.log(this.lastError);
-    },
-    QUIT: function () {
+    }
+    QUIT() {
         this.reader.close();
         process.exit(0);
-    },
+    }
 
     // Utilites
-    emit: function (event, arg, onResult, onError) {
+    emit(event, arg, onResult, onError) {
         try {
             this.emitter.emit(event, arg, (result) => {
                 console.log(onResult(result));
@@ -66,7 +66,7 @@ Plugin.prototype = {
                 console.log(onError(e));
             }
         }
-    },
+    }
 }
 // 正規表現にマッチして結果を返すプラグインを定義します。
 Plugin.byRules = function (rules, async) {

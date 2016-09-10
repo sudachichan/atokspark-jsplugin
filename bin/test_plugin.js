@@ -5,11 +5,11 @@ const fs = require('fs')
 const assert = require('assert');
 const child_process = require('child_process');
 
-function PluginTester(testSuite) {
-    this.testSuite = testSuite;
-}
-PluginTester.prototype = {
-    run: function () {
+class PluginTester {
+    constructor(testSuite) {
+        this.testSuite = testSuite;
+    }
+    run() {
         this.tests = this.testSuite.tests;
         this.currentTest = this.tests.shift();
         console.log(`TEST: ${this.currentTest.test}`);
@@ -17,14 +17,14 @@ PluginTester.prototype = {
 
         this.startPlugin();
         this.connect();
-    },
-    startPlugin: function () {
+    }
+    startPlugin() {
         const commandLine = this.testSuite.plugin.split(' ');
         this.child = child_process.spawn(commandLine.shift(), commandLine, {
             silent: true
         });
-    },
-    connect: function () {
+    }
+    connect() {
         this.stdout = '';
         this.child.stdout.on('data', (data) => {
             this.stdout += data;
@@ -41,8 +41,8 @@ PluginTester.prototype = {
             }
             this.onClose();
         });
-    },
-    onLine: function (line) {
+    }
+    onLine(line) {
         if (this.tests.length) {
             console.log(`\tOUTPUT: ${line}`);
             if (this.delayedError) {
@@ -67,18 +67,18 @@ PluginTester.prototype = {
             assert(false, this.currentTest.ifFailed);
             console.log('=>NG');
         }
-    },
-    onClose: function () {
+    }
+    onClose() {
         if (!this.tests.length) {
             console.log('=>OK');
         } else {
             console.log('=>CRASHED!!!')
         }
-    },
-    childPrint: function (line) {
+    }
+    childPrint(line) {
         console.log(`\tINPUT : ${line}`);
         this.child.stdin.write(line + '\n');
-    },
+    }
 };
 
 function main(args) {
