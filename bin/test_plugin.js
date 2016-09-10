@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+'use strict'
 const fs = require('fs')
 const assert = require('assert');
 const child_process = require('child_process');

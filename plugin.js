@@ -1,3 +1,4 @@
+'use strict'
 const EventEmitter = require('events').EventEmitter;
 
 function isInteger(s) {
@@ -71,13 +72,13 @@ Plugin.prototype = {
 Plugin.byRules = function (rules, async) {
     const MAX_AWAITINGS = 5;
     const awaitings = [];
-    var index = 0;
+    let index = 0;
 
     const simple = new Plugin().run();
     simple.on('check', (text, callback) => {
-        for (theRules of [rules.replaces, rules.views]) {
-            for (regex of Object.keys(theRules)) {
-                var matches = new RegExp(regex).exec(text);
+        for (let theRules of [rules.replaces, rules.views]) {
+            for (let regex of Object.keys(theRules)) {
+                let matches = new RegExp(regex).exec(text);
                 if (matches && matches[0] === text) {
                     const func = theRules[regex];
                     awaitings[index] = [func, matches];
