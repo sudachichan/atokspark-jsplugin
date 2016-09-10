@@ -24,17 +24,22 @@ PluginTester.prototype = {
         });
     },
     connect: function () {
-        var reader = require('readline').createInterface({
-            input: this.child.stdout,
-            output: this.child.stdin,
-        });
-        this.connectMethod(reader, 'line',  this.onLine);
-        this.connectMethod(reader, 'close', this.onClose);
-    },
-    connectMethod: function (rl, event, method) {
+        this.stdout = '';
         var that = this;
-        rl.on(event, function () {
-            method.apply(that, arguments);
+        this.child.stdout.on('data', function (data) {
+            that.stdout += data;
+            var newLines = that.stdout.split('\n');
+            if (newLines.length > 1) {
+                that.stdout = newLines.pop();
+                that.onLine(newLines.join('\n'));
+            }
+        });
+        this.child.stdout.on('close', function () {
+            if (that.stdout.length) {
+                that.onLine(that.stdout);
+                that.stdout = '';
+            }
+            that.onClose();
         });
     },
     onLine: function (line) {
