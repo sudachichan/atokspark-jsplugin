@@ -22,34 +22,60 @@ $ npm install --save git+https://github.com/sudachichan/atokspark-jsplugin.git
 
 ### 簡易記法
 
-以下のように `Plugin.byRules()` に、`{正規表現: 関数}` の連想配列を指定することでプラグインを定義できます。
+以下のように `Plugin.byRules()` に、以下の内容の連想配列を指定することでプラグインを定義できます。
+
+|属性名   |値|
+|--------|-|
+|replaces|文字列置換ルールを表現する`{正規表現: 関数}`の連想配列|
+|views   |ヘルプ表示ルールを表現する`{正規表現: 関数}`の連想配列|
 
 ```javascript
 var Plugin = require('atokspark-jsplugin');
 
 Plugin.byRules({
-    'foo:': function () {
-        return 'foo: がこの文字列に置換されます。';
+    replaces: {
+        'foo:': function () {
+            return 'foo: がこの文字列に置換されます。';
+        },
+        'bar:(.*):': function (matches) {
+            return 'bar:ほにゃらら: にマッチして「' + matches[1] + '」を使った文字列に置換されます。';
+        },
     },
-    'bar:(.*):': function (matches) {
-        return 'bar:ほにゃらら: にマッチして「' + matches[1] + '」を使った文字列に置換されます。';
+    views: {
+        'help:': function (callback) {
+            callback('<div>help</div>');
+        },
     },
 });
 ```
 
 ### 簡易記法(非同期版)
 
-以下のように `Plugin.byRulesAsync()` に、`{正規表現: 関数}` の連想配列を指定することでプラグインを定義できます。
+以下のように `Plugin.byRules()` に、以下の内容の連想配列を指定することでプラグインを定義できます。
+
+|属性名   |値|
+|--------|-|
+|async   |true|
+|replaces|文字列置換ルールを表現する`{正規表現: 関数}`の連想配列|
+|views   |ヘルプ表示ルールを表現する`{正規表現: 関数}`の連想配列|
 
 ```javascript
 var Plugin = require('atokspark-jsplugin');
 
-Plugin.byRulesAsync({
-    'foo:': function (callback) {
-        callback('foo: がこの文字列に置換されます。');
+Plugin.byRules({
+    async: true,
+    replaces: {
+        'foo:': function (callback) {
+            callback('foo: がこの文字列に置換されます。');
+        },
+        'bar:(.*):': function (callback, matches) {
+            callback('bar:ほにゃらら: にマッチして「' + matches[1] + '」を使った文字列に置換されます。');
+        },
     },
-    'bar:(.*):': function (callback, matches) {
-        callback('bar:ほにゃらら: にマッチして「' + matches[1] + '」を使った文字列に置換されます。');
+    views: {
+        'help:': function (callback) {
+            callback('<div>help</div>');
+        },
     },
 });
 ```
@@ -65,14 +91,18 @@ var Plugin = require('atokspark-jsplugin');
 
 var yourPlugin = new Plugin().run();
 yourPlugin.on('check', function (text, callback) {
-  // 指定されたテキストに応答する場合は、整数をcallbackします。
-  callback(0);
+  // 指定されたテキストに対して文字列置換する場合は ['REPLACE', 整数] をcallbackします。
+  callback(['REPLACE', 0]);
+  // 指定されたテキストに対して HTML ビューを表示する場合は、['VIEW', 整数]をcallbackします。
+  // callback(['VIEW', 0]);
   // 指定されたテキストに応答しない場合はnullをcallbackします。
   // callback(null);
 });
 yourPlugin.on('gettext', function (token, callback) {
   // 'check' の問い合わせ時に返した整数値(トークン)に対する文字列を返します。
-  callback("text");
+  callback('text');
+  // 'VIEW'を返した場合はXHTML文字列を返します。
+  // callback('<strong>text</strong>');
   // エラー時は例外を throw してください。
 });
 ```

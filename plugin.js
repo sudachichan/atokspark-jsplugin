@@ -30,10 +30,10 @@ Plugin.prototype = {
     },
 
     // Commands
-    CHECK: function (arg) {
-        this.emit('check', arg, function (n) {
-            return isInteger(n)
-                ? 'REPLACE ' + n
+    CHECK: function (text) {
+        this.emit('check', text, function (pair) {
+            return pair instanceof Array
+                ? pair.join(' ')
                 : 'NONE';
         }, function (e) {
             return 'NONE';
@@ -41,7 +41,7 @@ Plugin.prototype = {
     },
     GETTEXT: function (token) {
         this.emit('gettext', token, function (text) {
-            return 'TEXT ' + text;
+            return ['TEXT', text].join(' ');
         }, function (e) {
             return 'ERROR';
         })
@@ -78,14 +78,19 @@ Plugin.byRules = function (rules, async) {
     simple.on('check', function (text, callback) {
         var matches = null;
         var matchedRule = null;
-        for (regex of Object.keys(rules)) {
-            var matches = new RegExp(regex).exec(text);
-            if (matches) {
-                var func = rules[regex];
-                awaitings[index] = [func, matches];
-                callback(index);
-                index = index + 1 % MAX_AWAITINGS;
-                return;
+        for (theRules of [rules.replaces, rules.views]) {
+            for (regex of Object.keys(theRules)) {
+                var matches = new RegExp(regex).exec(text);
+                if (matches && matches[0] === text) {
+                    var func = theRules[regex];
+                    awaitings[index] = [func, matches];
+                    var theType = theRules == rules.replaces
+                        ? 'REPLACE'
+                        : 'VIEW';
+                    callback([theType, index]);
+                    index = index + 1 % MAX_AWAITINGS;
+                    return;
+                }
             }
         }
         callback(null);
@@ -97,16 +102,12 @@ Plugin.byRules = function (rules, async) {
         var pair = awaitings[token];
         var func = pair[0];
         var matches = pair[1];
-        if (async) {
+        if (rules.async) {
             func(callback, matches);
         } else {
             callback(func(matches));
         }
     });
-};
-// 正規表現にマッチして結果を返すプラグインを定義します。(非同期実行版)
-Plugin.byRulesAsync = function (rules) {
-    Plugin.byRules(rules, true);
 };
 
 module.exports = Plugin;
