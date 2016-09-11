@@ -1,5 +1,6 @@
 'use strict'
 const EventEmitter = require('events').EventEmitter;
+const iconv = require('iconv-lite');
 
 function isInteger(s) {
     return parseInt(s) === s;
@@ -15,7 +16,7 @@ class Plugin extends EventEmitter {
         });
     }
     run() {
-        console.log('HELLO ATOK Spark/0.0');
+        this.println('HELLO ATOK Spark/0.0');
         this.reader.on('line', (line) => {
             const args = line.split(' ');
             const command = args.shift();
@@ -23,7 +24,7 @@ class Plugin extends EventEmitter {
             if (command in this) {
                 this[command].apply(this, [arg]);
             } else {
-                console.log('UNKNOWN');
+                this.println('UNKNOWN');
             }
         });
         return this;
@@ -47,7 +48,7 @@ class Plugin extends EventEmitter {
         })
     }
     GETERROR() {
-        console.log(this.lastError);
+        this.println(this.lastError);
     }
     QUIT() {
         this.reader.close();
@@ -58,13 +59,20 @@ class Plugin extends EventEmitter {
     emit(event, arg, onResult, onError) {
         try {
             super.emit(event, arg, (result) => {
-                console.log(onResult(result));
+                this.println(onResult(result));
             })
         } catch (e) {
             this.lastError = e.toString();
             if (onError) {
-                console.log(onError(e));
+                this.println(onError(e));
             }
+        }
+    }
+    println(output) {
+        if (process.platform === 'win32') {
+            process.stdout.write(iconv.encode(`${output}\n`, 'Windows-31j'));
+        } else {
+            console.log(output);
         }
     }
 }

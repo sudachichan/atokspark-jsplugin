@@ -2,7 +2,9 @@
   "name": "atokspark-jsplugin",
   "version": "0.0.1",
   "description": "",
-  "bin": { "test_plugin": "bin/test_plugin.js" },
+  "bin": {
+    "test_plugin": "bin/test_plugin.js"
+  },
   "main": "plugin.js",
   "scripts": {
     "test": "echo No individual test now.; echo Try sample: https://github.com/sudachichan/atokspark-jsplugin-sample ."
@@ -16,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/sudachichan/atokspark-jsplugin/issues"
   },
-  "homepage": "https://github.com/sudachichan/atokspark-jsplugin#readme"
+  "homepage": "https://github.com/sudachichan/atokspark-jsplugin#readme",
+  "dependencies": {
+    "iconv-lite": "^0.4.13"
+  }
 }
