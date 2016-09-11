@@ -86,7 +86,7 @@ Plugin.byRules = function (rules, async) {
                         ? 'REPLACE'
                         : 'VIEW';
                     callback([theType, index]);
-                    index = index + 1 % MAX_AWAITINGS;
+                    index = (index + 1) % MAX_AWAITINGS;
                     return;
                 }
             }
