@@ -82,7 +82,7 @@ Plugin.byRules = function (rules, async) {
     const awaitings = [];
     let index = 0;
 
-    const simple = new Plugin().run();
+    const simple = new Plugin();
     simple.on('check', (text, callback) => {
         for (let theRules of [rules.replaces, rules.views]) {
             if (!theRules) {
@@ -117,6 +117,7 @@ Plugin.byRules = function (rules, async) {
             callback(func(matches));
         }
     });
+    return simple;
 };
 
 module.exports = Plugin;

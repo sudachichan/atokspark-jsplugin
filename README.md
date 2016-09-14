@@ -32,7 +32,7 @@ $ npm install --save git+https://github.com/sudachichan/atokspark-jsplugin.git
 ```javascript
 var Plugin = require('atokspark-jsplugin');
 
-Plugin.byRules({
+var yourPlugin = Plugin.byRules({
     replaces: {
         'foo:': function () {
             return 'foo: がこの文字列に置換されます。';
@@ -47,6 +47,13 @@ Plugin.byRules({
         },
     },
 });
+
+// atokspark-jspm によってロードされるために、yourPluginをエクスポートします。
+module.exports = yourPlugin;
+if (require.main === module) {
+    // 単独で実行されたときには run() を呼び出します。
+    yourPlugin.run();
+}
 ```
 
 ### 簡易記法(非同期版)
@@ -62,7 +69,7 @@ Plugin.byRules({
 ```javascript
 var Plugin = require('atokspark-jsplugin');
 
-Plugin.byRules({
+var yourPlugin = Plugin.byRules({
     async: true,
     replaces: {
         'foo:': function (callback) {
@@ -78,6 +85,13 @@ Plugin.byRules({
         },
     },
 });
+
+// atokspark-jspm によってロードされるために、yourPluginをエクスポートします。
+module.exports = yourPlugin;
+if (require.main === module) {
+    // 単独で実行されたときには run() を呼び出します。
+    yourPlugin.run();
+}
 ```
 
 ### イベント処理記法
@@ -89,7 +103,7 @@ Plugin.byRules({
 ```javascript
 var Plugin = require('atokspark-jsplugin');
 
-var yourPlugin = new Plugin().run();
+var yourPlugin = new Plugin();
 yourPlugin.on('check', function (text, callback) {
   // 指定されたテキストに対して文字列置換する場合は ['REPLACE', 整数] をcallbackします。
   callback(['REPLACE', 0]);
@@ -105,6 +119,13 @@ yourPlugin.on('gettext', function (token, callback) {
   // callback('<strong>text</strong>');
   // エラー時は例外を throw してください。
 });
+
+// atokspark-jspm によってロードされるために、yourPluginをエクスポートします。
+module.exports = yourPlugin;
+if (require.main === module) {
+    // 単独で実行されたときには run() を呼び出します。
+    yourPlugin.run();
+}
 ```
 
 ## ATOK Spark にプラグインを登録する
