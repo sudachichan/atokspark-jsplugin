@@ -85,6 +85,9 @@ Plugin.byRules = function (rules, async) {
     const simple = new Plugin().run();
     simple.on('check', (text, callback) => {
         for (let theRules of [rules.replaces, rules.views]) {
+            if (!theRules) {
+                continue;
+            }
             for (let regex of Object.keys(theRules)) {
                 let matches = new RegExp(regex).exec(text);
                 if (matches && matches[0] === text) {
