@@ -10,13 +10,13 @@ class Plugin extends EventEmitter {
     constructor() {
         super();
         this.lastError = '';
+    }
+    run() {
+        this.println('HELLO ATOK Spark/0.0');
         this.reader = require('readline').createInterface({
             input: process.stdin,
             output: process.stdout,
         });
-    }
-    run() {
-        this.println('HELLO ATOK Spark/0.0');
         this.reader.on('line', (line) => {
             const args = line.split(' ');
             const command = args.shift();
